@@ -1,0 +1,19 @@
+{
+  "name": "airlance",
+  "version": "1.0.0",
+  "description": "This repository contains docker configurations for local development.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/resoul/airlance.git"
+  },
+  "private": true,
+  "author": "resoul",
+  "license": "proprietary",
+  "dependencies": {
+    "locanika": "^1.0.9"
+  }
+}

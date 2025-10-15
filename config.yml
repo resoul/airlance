@@ -1,0 +1,20 @@
+os_name: ~
+file_system: ~
+docker_mode: root
+services_restart_policy: always
+
+projects:
+  - name: api
+    src: git@github.com:resoul/airlance.api.git
+
+enabled_services:
+  # storages
+  - db
+  - rabbitmq
+  - minio
+
+  # projects
+  - api
+
+  # tools
+  - adminer

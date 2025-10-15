@@ -1,0 +1,17 @@
+services:
+
+# storages
+{% include "adminer/docker-compose.j2" %}
+{% include "db/docker-compose.j2" %}
+{% include "rabbitmq/docker-compose.j2" %}
+{% include "minio/docker-compose.j2" %}
+
+# core
+{% include "api/docker-compose.j2" %}
+
+volumes:
+  volume-db:
+  volume-storage:
+    driver_opts:
+      type: tmpfs
+      device: tmpfs

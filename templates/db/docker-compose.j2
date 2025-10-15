@@ -1,0 +1,11 @@
+  db:
+    image: postgres:16-alpine
+    restart: {{ services_restart_policy }}
+    environment:
+      POSTGRES_USER: airlance
+      POSTGRES_PASSWORD: airlance
+      POSTGRES_DB: airlance
+    ports:
+      - "5432:5432"
+    volumes:
+      - volume-db:/var/lib/postgresql/data

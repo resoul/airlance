@@ -1,0 +1,13 @@
+  api:
+    image: airlance/go:dev
+    volumes:
+      - ./projects/api:/app
+    restart: {{ services_restart_policy }}
+    environment:
+      RABBITMQ_URL: amqp://airlance:airlance@rabbitmq:5672/
+      DATABASE_URL: postgres://airlance:airlance@airlance:5432/app?sslmode=disable
+      DOMAINS: api.airlance.localhost
+    ports:
+      - 2222:8080
+    depends_on:
+      - db

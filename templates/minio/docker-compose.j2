@@ -1,0 +1,12 @@
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: airlance
+      MINIO_ROOT_PASSWORD: airlance
+      DOMAINS: minio.airlance.localhost
+    volumes:
+      - volume-storage:/data

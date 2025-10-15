@@ -1,0 +1,10 @@
+  rabbitmq:
+    image: rabbitmq:3.8.8-management
+    restart: {{ services_restart_policy }}
+    environment:
+      RABBITMQ_DEFAULT_USER: airlance
+      RABBITMQ_DEFAULT_PASS: airlance
+      DOMAINS: rabbitmq.airlance.localhost
+    ports:
+      - 7014:15672
+      - 7015:5672
