@@ -1,0 +1,7 @@
+http://api.localhost {
+	reverse_proxy api:8081
+}
+
+http://adminer.localhost {
+	reverse_proxy adminer:8080
+}

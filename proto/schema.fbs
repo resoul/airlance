@@ -1,0 +1,246 @@
+namespace Protocol;
+
+//   1: Ping                — (heartbeat)
+//   2: Pong                — (heartbeat)
+//   3: NewSession          — (session)
+//   4: ResumeSession       — (session)
+//   5: RegisterAccount     — (registration)
+//   6: RegisterAccountAck  — (registration)
+//   7: ConfirmEmailCode    — (registration)
+//   8: ConfirmEmailCodeAck — (registration)
+//   9: Error               — (general error)
+//  10: NewSessionAck       — (session)
+//  11: ResumeSessionAck    — (session)
+//  12: SendMessage         — (messaging)
+//  13: SendMessageAck      — (messaging)
+//  14: MessageUpdate       — (messaging)
+//  15: GetDifference       — (updatelog)
+//  16: DifferenceAck       — (updatelog)
+//  17: CreateQRTicket      — (qrlogin)
+//  18: CreateQRTicketAck   — (qrlogin)
+//  19: QRTicketStatusUpdate — (qrlogin)
+//  20: ScanQRTicket        — (qrlogin)
+//  21: ConfirmQRTicket     — (qrlogin)
+//  22: DenyQRTicket        — (qrlogin)
+//  23: QRLoginAck          — (qrlogin)
+//  24: Logout              — (session)
+//  25: LogoutAck           — (session)
+//  26: ListSessions        — (session)
+//  27: ListSessionsAck     — (session)
+//  28: LogoutAllSessions   — (session)
+//  29: LogoutAllSessionsAck— (session)
+//  30: SetSessionTTL       — (session)
+//  31: SetSessionTTLAck    — (session)
+
+union Body {
+  Ping,
+  Pong,
+  NewSession,
+  ResumeSession,
+  RegisterAccount,
+  RegisterAccountAck,
+  ConfirmEmailCode,
+  ConfirmEmailCodeAck,
+  Error,
+  NewSessionAck,
+  ResumeSessionAck,
+  SendMessage,
+  SendMessageAck,
+  MessageUpdate,
+  GetDifference,
+  DifferenceAck,
+  CreateQRTicket,
+  CreateQRTicketAck,
+  QRTicketStatusUpdate,
+  ScanQRTicket,
+  ConfirmQRTicket,
+  DenyQRTicket,
+  QRLoginAck,
+  Logout,
+  LogoutAck,
+  ListSessions,
+  ListSessionsAck,
+  LogoutAllSessions,
+  LogoutAllSessionsAck,
+  SetSessionTTL,
+  SetSessionTTLAck,
+}
+
+table Ping {
+  timestamp: int64;
+}
+
+table Pong {
+  timestamp: int64;
+}
+
+table NewSession {
+  device_id: uint64;
+}
+
+table ResumeSession {
+  session_id: string;
+}
+
+table NewSessionAck {
+  session_id: string;
+  current_seq: int64;
+}
+
+table ResumeSessionAck {
+  session_id: string;
+  current_seq: int64;
+}
+
+table RegisterAccount {
+  email: string;
+  first_name: string;
+  last_name: string;
+}
+
+table RegisterAccountAck {
+  account_id: uint64;
+}
+
+table ConfirmEmailCode {
+  account_id: uint64;
+  code: string;
+  device_fingerprint: string;
+  device_name: string;
+  platform: string;
+  os_version: string;
+  app_version: string;
+}
+
+table ConfirmEmailCodeAck {
+  session_id: string;
+  device_id: uint64;
+  current_seq: int64;
+}
+
+enum ErrorCode : byte {
+  UNKNOWN = 0,
+  EMAIL_ALREADY_EXISTS = 1,
+  INVALID_CODE = 2,
+  TOO_MANY_ATTEMPTS = 3,
+  EXPIRED_CODE = 4,
+  RATE_LIMIT_EXCEEDED = 5,
+  SESSION_NOT_FOUND = 6,
+  DEVICE_NOT_FOUND = 7,
+  INVALID_RECIPIENT = 8,
+  IDENTITY_ALREADY_LINKED = 9,
+  OAUTH_STATE_MISMATCH = 10,
+  OAUTH_EXCHANGE_FAILED = 11,
+  QR_TICKET_NOT_FOUND = 12,
+  QR_TICKET_EXPIRED = 13,
+  SESSION_ALREADY_REVOKED = 14,
+  INVALID_SESSION_TTL = 15,
+}
+
+table Error {
+  code: ErrorCode;
+  message: string;
+}
+
+table SendMessage {
+  recipient_account_id: uint64;
+  client_msg_id: string;
+  text: string;
+}
+
+table SendMessageAck {
+  client_msg_id: string;
+  server_msg_id: string;
+  created_at: int64;
+}
+
+table MessageUpdate {
+  server_msg_id: string;
+  sender_account_id: uint64;
+  text: string;
+  created_at: int64;
+  seq_no: int64;
+}
+
+table GetDifference {
+  since_seq: int64;
+}
+
+table DifferenceAck {
+  updates: [MessageUpdate];
+  current_seq: int64;
+  has_more: bool;
+}
+
+table CreateQRTicket {
+  device_name: string;
+  platform: string;
+  os_version: string;
+  app_version: string;
+}
+
+table CreateQRTicketAck {
+  ticket_id: string;
+  expires_at: int64;
+}
+
+enum QRTicketStatus : byte { PENDING = 0, SCANNED = 1, CONFIRMED = 2, DENIED = 3, EXPIRED = 4 }
+
+table QRTicketStatusUpdate {
+  ticket_id: string;
+  status: QRTicketStatus;
+}
+
+table ScanQRTicket { ticket_id: string; }
+table ConfirmQRTicket { ticket_id: string; }
+table DenyQRTicket { ticket_id: string; }
+
+table QRLoginAck {
+  session_id: string;
+  device_id: uint64;
+  account_id: uint64;
+  current_seq: int64;
+}
+
+table Logout {}
+
+table LogoutAck {}
+
+table ListSessions {}
+
+table SessionInfo {
+  session_id: string;
+  device_id: uint64;
+  device_name: string;
+  platform: string;
+  os_version: string;
+  is_current: bool;
+  created_at: int64;
+  last_active_at: int64;
+}
+
+table ListSessionsAck {
+  sessions: [SessionInfo];
+}
+
+table LogoutAllSessions {
+  except_current: bool;
+}
+
+table LogoutAllSessionsAck {
+  revoked_count: int32;
+}
+
+table SetSessionTTL {
+  has_months: bool;
+  months: int32;
+}
+
+table SetSessionTTLAck {}
+
+table Envelope {
+  request_id: uint64;
+  body: Body;
+}
+
+root_type Envelope;

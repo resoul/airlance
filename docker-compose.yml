@@ -1,0 +1,70 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: airlance
+      POSTGRES_USER: airlance
+      POSTGRES_PASSWORD: airlance
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - airlance
+
+  api:
+    image: airlance/api:dev
+    container_name: api
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+    networks:
+      - airlance
+
+  redis:
+    image: redis:8-alpine
+    container_name: redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - airlance
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: unless-stopped
+    networks:
+      - airlance
+
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./hosts:/etc/caddy/hosts:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - airlance
+
+volumes:
+  redis_data:
+  postgres_data:
+  caddy_data:
+  caddy_config:
+
+networks:
+  airlance:
