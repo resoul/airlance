@@ -20,7 +20,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - .:/app
+      - ./workspace/api:/app
     restart: unless-stopped
     depends_on:
       postgres:

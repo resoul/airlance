@@ -1,7 +1,11 @@
-http://api.localhost {
+http://api.iwasthere.digital {
 	reverse_proxy api:8081
 }
 
 http://adminer.localhost {
 	reverse_proxy adminer:8080
+}
+
+http://mailpit.localhost {
+	reverse_proxy mailpit:8025
 }

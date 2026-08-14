@@ -4,7 +4,7 @@ REPOS := \
 	git@github.com:airlance/api.git \
 	git@github.com:airlance/macOS-swift.git
 
-.PHONY: help init clone pull up down restart gen-fbs
+.PHONY: help init clone pull up down restart gen-fbs zip
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "%-25s %s\n", $$1, $$2}'
@@ -41,3 +41,7 @@ down: ## Stop docker containers
 
 gen-fbs: ## Generate flatbuffer code
 	sh ./scripts/gen-fbs.sh
+
+zip: ## Archive project
+	COPYFILE_DISABLE=1 zip -r airlance.zip . -x ".git/*" "workspace/macOS-swift/.git/*" "workspace/api/.git/*" ".idea/*" ".env" ".env.example" ".gitignore" "app" "server.key" "Makefile" "*.DS_Store" "*/.DS_Store" "__MACOSX/*" "workspace/api/internal/protocol/generated/*" "workspace/macOS-swift/third-party/Flatbuffers/Sources/*"
+
