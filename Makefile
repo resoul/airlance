@@ -4,7 +4,7 @@ REPOS := \
 	git@github.com:airlance/api.git \
 	git@github.com:airlance/macOS-swift.git
 
-.PHONY: help init clone pull up down restart gen-fbs zip console
+.PHONY: help init clone pull up down restart gen-fbs zip console minio-token
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "%-25s %s\n", $$1, $$2}'
@@ -55,3 +55,14 @@ gen-fbs: ## Generate flatbuffer code
 zip: ## Archive project
 	COPYFILE_DISABLE=1 zip -r airlance.zip . -x ".git/*" "workspace/macOS-swift/.git/*" "workspace/api/.git/*" ".idea/*" ".env" ".env.example" ".gitignore" "app" "server.key" "Makefile" "*.DS_Store" "*/.DS_Store" "__MACOSX/*" "workspace/api/internal/protocol/generated/*" "workspace/macOS-swift/third-party/Flatbuffers/Sources/*"
 
+minio-token: ## Generate and fetch Prometheus bearer token from MinIO
+	@echo "Generating MinIO Prometheus token..."
+	@TOKEN=$$(docker compose exec -T minio sh -c " \
+		mc alias set myminio http://localhost:9000 studio-minio studio-minio > /dev/null 2>&1 && \
+		mc admin prometheus generate myminio cluster" | grep "bearer_token" | sed -E 's/.*bearer_token: "(.*)"/\1/'); \
+	if [ -z "$$TOKEN" ]; then \
+		echo "✗ Failed to fetch token. Is MinIO container running?"; \
+		exit 1; \
+	fi; \
+	echo "✓ Your Prometheus Token:"; \
+	echo "$$TOKEN"
