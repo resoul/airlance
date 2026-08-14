@@ -4,7 +4,7 @@ REPOS := \
 	git@github.com:airlance/api.git \
 	git@github.com:airlance/macOS-swift.git
 
-.PHONY: help init clone pull up down restart gen-fbs zip
+.PHONY: help init clone pull up down restart gen-fbs zip console
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "%-25s %s\n", $$1, $$2}'
@@ -12,6 +12,16 @@ help: ## Show available commands
 init: clone up ## Clone repositories and start containers
 
 restart: down up ## Restart all containers
+
+FIRST_GOAL := $(firstword $(MAKECMDGOALS))
+ifeq ($(FIRST_GOAL),console)
+  RUN_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  $(eval $(RUN_ARGS):;@:)
+endif
+SERVICE = $(if $(RUN_ARGS),$(RUN_ARGS),api)
+
+console: ## Open shell inside container. Usage: make console [service_name]
+	docker compose exec -it $(SERVICE) sh
 
 clone: ## Clone repositories
 	@mkdir -p $(WORKSPACE)
