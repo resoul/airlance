@@ -1,4 +1,4 @@
-http://api.iwasthere.digital {
+http://api.localhost {
 	reverse_proxy api:8081
 }
 
